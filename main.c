@@ -13,6 +13,9 @@
 #define KEY_ENTER 13
 
 int rx, ry, rz = 0;
+int tx, ty, tz = 0;
+float s=1;
+int r = 0;
 
 void onKeyPress(unsigned char key, int keyX, int keyY) {
     switch (key) {
@@ -34,17 +37,47 @@ void onKeyPress(unsigned char key, int keyX, int keyY) {
         case 'x':
             rz++;
         break;
+        
+        case 'e':
+            tx--;
+        break;
+        case 'r':
+            tx++;
+        break;
+        case 'd':
+            ty--;
+        break;
+        case 'f':
+            ty++;
+        break;
+        case 'c':
+            tz--;
+        break;
+        case 'v':
+            tz++;
+        break;
+        
         case KEY_ENTER:
             rx = 0;
             ry = 0;
             rz = 0;
+            tx = 0;
+            ty = 0;
+            tz = 0;
+        break;
+        case '1':
+            s *= 2;
+        break;
+        case '2':
+            s /= 2;
         break;
     }
     if (rx > 360) { rx -= 360; } else if (rx < 0) { rx += 360; }
     if (ry > 360) { ry -= 360; } else if (ry < 0) { ry += 360; }
     if (rz > 360) { rz -= 360; } else if (rz < 0) { rz += 360; }
+    if (r > 360) { r -= 360; } else if (r < 0) { r += 360; }
     glutPostRedisplay();
-    printf("Rot (%d, %d, %d)\n", rx, ry, rz);
+    printf("Rot (%d, %d, %d) Translate (%d, $d, $d)\n", rx, ry, rz, tx, ty, tz);
 }
 
 void drawAxis() {
@@ -84,6 +117,44 @@ void drawAxis() {
     glEnd();
 }
 
+void drawObject() {
+    // X (by y)
+    glColor3f(0.8, 0.2, 0.2);
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0.5, 0);
+        glVertex3f(0.1, 0.5, 0);
+        glVertex3f(0, 1, 0);
+        glVertex3f(-0.1, 0.5, 0);
+        glVertex3f(0, 0.5, 0);
+    glEnd();
+    
+    
+    //Y (by x)
+    glColor3f(0.2, 0.8, 0.2);
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0.5, 0, 0);
+        glVertex3f(0.5, 0.1, 0);
+        glVertex3f(1, 0, 0);
+        glVertex3f(0.5, -0.1, 0);
+        glVertex3f(0.5, 0, 0);
+    glEnd();
+    
+    
+    //Z (by XY)
+    glColor3f(0.4, 0.4, 0.8);
+    glBegin(GL_LINE_LOOP);
+        glVertex3f(0, 0, 0);
+        glVertex3f(0, 0, 0.5);
+        glVertex3f(0.1, 0.1, 0.5);
+        glVertex3f(0, 0, 1);
+        glVertex3f(-0.1, -0.1, 0.5);
+        glVertex3f(0, 0, 0.5);
+    glEnd();
+}
+
+
 
 /*
  * Main drawing loop
@@ -94,13 +165,26 @@ void renderScene(void) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     
+    glScalef(s, s, s);
+    glTranslatef(tx, ty, tz);
     glRotatef(rx, 1.0, 0, 0);
     glRotatef(ry, 0, 1.0, 0);
     glRotatef(rz, 0, 0, 1.0);
     drawAxis();
     
+    glRotatef(45, 0, 0, 1);
+    glTranslatef(2, 0, 0);
+    glPushMatrix();
+        glTranslatef(0, -2, 0);
+        drawObject();
+    glPopMatrix();
+    glRotatef(180, 0, 0, 1);
+    glTranslatef(0, -2, 0);
+    drawObject();
+            
     glutSwapBuffers();
 }
+
 
 /*
  * Initiating OpenGl
