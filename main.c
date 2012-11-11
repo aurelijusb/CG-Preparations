@@ -172,16 +172,18 @@ void renderScene(void) {
     glRotatef(rz, 0, 0, 1.0);
     drawAxis();
     
+    glTranslatef(1, 0, 0);
     glRotatef(45, 0, 0, 1);
-    glTranslatef(2, 0, 0);
+    glTranslatef(0, 1, 0);
+    glRotatef(90, 0, 0, 1);
     glPushMatrix();
-        glTranslatef(0, -2, 0);
+        glTranslatef(-1, 0, 0);
         drawObject();
+        glTranslatef(0, -1, 0);
     glPopMatrix();
-    glRotatef(180, 0, 0, 1);
-    glTranslatef(0, -2, 0);
+    glTranslatef(2, 0, 0);
     drawObject();
-            
+    
     glutSwapBuffers();
 }
 
